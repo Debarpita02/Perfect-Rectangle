@@ -1,0 +1,52 @@
+import java.util.HashSet;
+
+class Solution {
+    public boolean isRectangleCover(int[][] rectangles) {
+        if (rectangles == null || rectangles.length == 0) {
+            return false;
+        }
+
+        // Initialize variables to keep track of the bounding rectangle boundaries.
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int maxY = Integer.MIN_VALUE;
+
+        // Initialize a set to store unique corner points of rectangles.
+        HashSet<String> points = new HashSet<>();
+        
+        // Initialize the total area of the covered rectangles.
+        long totalArea = 0;
+
+        for (int[] rect : rectangles) {
+            int x1 = rect[0];
+            int y1 = rect[1];
+            int x2 = rect[2];
+            int y2 = rect[3];
+            
+            // Update the bounding rectangle boundaries.
+            minX = Math.min(minX, x1);
+            minY = Math.min(minY, y1);
+            maxX = Math.max(maxX, x2);
+            maxY = Math.max(maxY, y2);
+
+            // Calculate the area of the current rectangle.
+            long rectArea = (long)(x2 - x1) * (y2 - y1);
+            totalArea += rectArea;
+            
+            // Add the four corner points of the current rectangle to the set.
+            String[] cornerPoints = {x1 + "-" + y1, x1 + "-" + y2, x2 + "-" + y1, x2 + "-" + y2};
+            for (String point : cornerPoints) {
+                if (!points.add(point)) {
+                    points.remove(point); // If already encountered, remove it (corner of an inner rectangle).
+                }
+            }
+        }
+
+        // Calculate the area of the bounding rectangle.
+        long boundingArea = (long)(maxX - minX) * (maxY - minY);
+        
+        // Check if the total area of the covered rectangles matches the bounding rectangle area.
+        return totalArea == boundingArea && points.size() == 4 && points.contains(minX + "-" + minY) && points.contains(minX + "-" + maxY) && points.contains(maxX + "-" + minY) && points.contains(maxX + "-" + maxY);
+    }
+}
